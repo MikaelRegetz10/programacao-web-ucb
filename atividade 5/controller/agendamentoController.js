@@ -1,5 +1,14 @@
+const AgendamentoConsulta = require('../models/agendamentoConsultaModel');
+
 function getIndexView(req, res){
     res.render('index.html');
+}
+
+
+function getAgendamentoView(req, res){
+    AgendamentoConsulta.findAll().then((agendamentos)=>{
+        res.render('agendamentos.html', {agendamentos});        
+    })
 }
 
 function agendarConsulta(req, res){
@@ -21,11 +30,19 @@ function agendarConsulta(req, res){
         campos_invalidos.push("CPF");
     }
 
-    res.render('index.html', {form_invalido, campos_invalidos, dados_consulta});
+    if(campos_invalidos.length == 0){
+        AgendamentoConsulta.create(dados_consulta).then(()=>{
+            res.redirect('/agendamentos');
+        });
+    }
+    else{
+        res.render('index.html', {form_invalido, campos_invalidos, dados_consulta});
+    }
 }
 
 
 module.exports = {
     getIndexView,
-    agendarConsulta
+    agendarConsulta,
+    getAgendamentoView
 }
